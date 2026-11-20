@@ -1,0 +1,1224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#080d20">
+  <meta name="description" content="GlobalJobs Portal demo application administration dashboard.">
+  <title>Admin Dashboard — GlobalJobs Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #080d20;
+      --panel: rgba(18, 26, 54, .78);
+      --line: rgba(151, 169, 255, .14);
+      --muted: #9da9c5;
+      --text: #f5f7ff;
+      --blue: #5e8bff;
+      --purple: #a56dff;
+      --cyan: #62ddff;
+      --green: #70deb0;
+      --red: #ff8e9b;
+      --amber: #ffcd78;
+      --font: "DM Sans", sans-serif;
+      --display: "Poppins", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 90px; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font: 15px/1.6 var(--font);
+      overflow-x: hidden;
+    }
+    body::before {
+      position: fixed;
+      z-index: -1;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at 83% 12%, rgba(86, 67, 200, .15), transparent 34%),
+        radial-gradient(ellipse at 4% 55%, rgba(24, 110, 211, .09), transparent 31%),
+        linear-gradient(180deg, #080d20, #0a1025 55%, #080d20);
+      content: "";
+      pointer-events: none;
+    }
+    a { color: inherit; text-decoration: none; }
+    button, input, select, textarea { font: inherit; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    .container { width: min(1320px, calc(100% - 48px)); margin-inline: auto; }
+    .site-header {
+      position: sticky;
+      z-index: 20;
+      top: 0;
+      border-bottom: 1px solid rgba(151, 169, 255, .09);
+      background: rgba(8, 13, 32, .84);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+    .nav-wrap { display: flex; min-height: 72px; align-items: center; justify-content: space-between; gap: 20px; }
+    .brand { display: inline-flex; align-items: center; gap: 10px; font: 600 .98rem var(--display); white-space: nowrap; }
+    .brand-mark { display: grid; width: 35px; height: 35px; place-items: center; border: 1px solid rgba(130,170,255,.4); border-radius: 11px; background: linear-gradient(145deg,rgba(61,143,255,.3),rgba(151,89,255,.22)); color: #b7d8ff; font-size: 1.1rem; }
+    .gradient-text { color: #a9a8ff; background: linear-gradient(100deg,#70baff 5%,#9d8aff 55%,#d89cff); background-clip: text; -webkit-text-fill-color: transparent; }
+    .nav-right { display: flex; align-items: center; gap: 18px; }
+    .nav-links { display: flex; align-items: center; gap: 22px; }
+    .nav-links a, .nav-user { color: #aeb9d2; font-size: .82rem; transition: color .2s ease; }
+    .nav-links a:hover { color: white; }
+    .nav-user { display: flex; align-items: center; gap: 8px; padding-left: 15px; border-left: 1px solid var(--line); }
+    .user-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); box-shadow: 0 0 10px rgba(112,222,176,.65); }
+    .logout {
+      min-height: 35px;
+      padding: 0 12px;
+      border: 1px solid rgba(151,169,255,.19);
+      border-radius: 9px;
+      background: rgba(18,26,54,.7);
+      color: #d5def2;
+      font-size: .78rem;
+      cursor: pointer;
+    }
+    .logout:hover { border-color: rgba(151,169,255,.45); color: white; }
+    .dashboard-main { padding: 34px 0 72px; }
+    .page-title-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; margin-bottom: 22px; }
+    .eyebrow { display: inline-flex; align-items: center; gap: 9px; color: #aebeff; font-size: .72rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+    .eyebrow::before { width: 19px; height: 1px; background: var(--cyan); content: ""; }
+    h1 { margin: 7px 0 2px; font: 600 clamp(1.8rem, 3.5vw, 2.45rem)/1.2 var(--display); letter-spacing: -.05em; }
+    .page-subtitle { margin: 0; color: var(--muted); font-size: .85rem; }
+    .title-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 9px; }
+    .button {
+      display: inline-flex;
+      min-height: 39px;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 0 14px;
+      border: 1px solid rgba(167,174,255,.34);
+      border-radius: 9px;
+      background: linear-gradient(110deg,#387bfa,#7956ed 75%,#9759e9);
+      box-shadow: 0 6px 21px rgba(78,95,231,.18), inset 0 1px rgba(255,255,255,.16);
+      color: #fff;
+      font: 600 .79rem var(--font);
+      cursor: pointer;
+      transition: transform .18s ease, box-shadow .18s ease;
+    }
+    .button:hover { transform: translateY(-1px); box-shadow: 0 9px 26px rgba(78,95,231,.3); }
+    .button:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+    .button-secondary { border-color: rgba(151,169,255,.18); background: rgba(18,26,54,.72); box-shadow: none; color: #ccd5ed; }
+    .button-danger { border-color: rgba(255,142,155,.32); background: linear-gradient(110deg,#9c3e68,#7446bb); }
+    .button-success { border-color: rgba(112,222,176,.3); background: linear-gradient(110deg,#248d83,#3e64c0); }
+    .error-banner, .toast {
+      display: none;
+      margin-bottom: 17px;
+      padding: 12px 15px;
+      border: 1px solid rgba(255,142,155,.31);
+      border-radius: 10px;
+      background: rgba(133,38,63,.15);
+      color: #ffb6bf;
+      font-size: .82rem;
+    }
+    .error-banner.visible, .toast.visible { display: block; }
+    .toast { position: fixed; z-index: 50; right: 24px; bottom: 24px; max-width: min(440px, calc(100% - 48px)); margin: 0; border-color: rgba(103,180,236,.28); background: rgba(13,31,60,.96); color: #dce9ff; box-shadow: 0 15px 40px rgba(0,0,0,.28); }
+    .stats-grid { display: grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap: 13px; margin-bottom: 20px; }
+    .stat-card, .panel, .detail-panel {
+      border: 1px solid var(--line);
+      background: linear-gradient(145deg, rgba(23,33,68,.72), rgba(13,19,42,.73));
+      box-shadow: 0 14px 40px rgba(0,0,0,.12), inset 0 1px rgba(255,255,255,.025);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+    .stat-card { min-width: 0; padding: 17px 18px; border-radius: 13px; }
+    .stat-top { display: flex; align-items: center; justify-content: space-between; gap: 7px; }
+    .stat-label { color: #9ba8c4; font-size: .74rem; line-height: 1.35; }
+    .stat-icon { display: grid; width: 29px; height: 29px; flex: 0 0 auto; place-items: center; border: 1px solid rgba(120,156,255,.18); border-radius: 9px; background: rgba(73,107,198,.12); color: #a7c3ff; font-size: .84rem; }
+    .stat-number { display: block; margin-top: 8px; color: #f4f6ff; font: 600 1.7rem/1.1 var(--display); letter-spacing: -.04em; }
+    .stat-number.green { color: var(--green); }
+    .stat-number.red { color: var(--red); }
+    .stat-number.amber { color: var(--amber); }
+    .chart-grid { display: grid; grid-template-columns: 1.2fr .8fr; gap: 15px; margin-bottom: 20px; }
+    .panel, .detail-panel { min-width: 0; border-radius: 15px; }
+    .panel { padding: 19px; }
+    .panel-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 13px; }
+    .panel-heading h2, .section-title { margin: 0; font: 500 1rem var(--display); letter-spacing: -.02em; }
+    .panel-heading p { margin: 3px 0 0; color: #8996b3; font-size: .74rem; }
+    .chart-holder { position: relative; height: 230px; }
+    .chart-fallback { display: none; align-items: center; justify-content: center; height: 100%; color: #8996b3; font-size: .8rem; text-align: center; }
+    .table-panel { padding: 19px; }
+    .table-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 16px 0 13px; }
+    .filters { display: flex; flex-wrap: wrap; gap: 8px; }
+    .control, .filter-control {
+      min-height: 38px;
+      padding: 8px 11px;
+      border: 1px solid rgba(151,169,255,.16);
+      border-radius: 9px;
+      outline: none;
+      background: rgba(8,14,33,.7);
+      color: #e7ecfa;
+      font-size: .78rem;
+    }
+    .control:focus, .filter-control:focus, textarea:focus { border-color: rgba(103,158,255,.72); box-shadow: 0 0 0 3px rgba(79,125,245,.1); }
+    .filter-control::placeholder, .control::placeholder { color: #73809f; }
+    .search-control { width: 210px; }
+    .filter-select { min-width: 145px; }
+    .sort-select { min-width: 138px; }
+    select option { background: #111a36; color: #f5f7ff; }
+    .results-count { flex: 0 0 auto; color: #8390ad; font-size: .74rem; }
+    .table-wrap { width: 100%; overflow-x: auto; border: 1px solid rgba(151,169,255,.1); border-radius: 10px; }
+    table { width: 100%; min-width: 830px; border-collapse: collapse; text-align: left; }
+    th { padding: 11px 12px; background: rgba(7,13,31,.45); color: #8794b1; font-size: .69rem; font-weight: 700; letter-spacing: .045em; text-transform: uppercase; white-space: nowrap; }
+    td { padding: 12px; border-top: 1px solid rgba(151,169,255,.08); color: #cbd4e9; font-size: .76rem; vertical-align: middle; }
+    tbody tr:hover { background: rgba(72,104,181,.08); }
+    .candidate-cell strong { display: block; color: #edf0fc; font-size: .78rem; font-weight: 600; }
+    .candidate-cell span, .muted-cell { color: #8190ae; font-size: .7rem; }
+    .score-cell { color: #c5cbff; font-weight: 700; white-space: nowrap; }
+    .status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 8px; border: 1px solid rgba(151,169,255,.16); border-radius: 999px; background: rgba(70,88,145,.13); color: #c4cce1; font-size: .68rem; white-space: nowrap; }
+    .status-badge::before { width: 6px; height: 6px; border-radius: 50%; background: #9ba8c4; content: ""; }
+    .status-badge.eligible { border-color: rgba(112,222,176,.2); background: rgba(43,142,108,.1); color: #9fe3c7; }
+    .status-badge.eligible::before { background: var(--green); }
+    .status-badge.not-eligible { border-color: rgba(255,142,155,.22); background: rgba(156,57,79,.12); color: #ffabb5; }
+    .status-badge.not-eligible::before { background: var(--red); }
+    .status-badge.pending { border-color: rgba(255,205,120,.2); background: rgba(146,105,38,.1); color: #f4d18e; }
+    .status-badge.pending::before { background: var(--amber); }
+    .countdown { color: #f1cf8c; font: 500 .72rem var(--font); white-space: nowrap; }
+    .countdown.expired { color: var(--red); }
+    .view-button { min-height: 30px; padding: 0 10px; border: 1px solid rgba(123,158,255,.22); border-radius: 7px; background: rgba(68,99,178,.12); color: #c9d6ff; font-size: .7rem; cursor: pointer; }
+    .view-button:hover { border-color: rgba(123,158,255,.48); background: rgba(68,99,178,.22); }
+    .empty-row { padding: 28px !important; color: #8794b1; text-align: center; }
+    .detail-panel { margin-top: 20px; padding: 22px; scroll-margin-top: 88px; animation: panel-in .25s ease both; }
+    .detail-panel[hidden] { display: none; }
+    @keyframes panel-in { from { opacity: 0; transform: translateY(7px); } to { opacity: 1; transform: translateY(0); } }
+    .detail-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 15px; padding-bottom: 17px; border-bottom: 1px solid rgba(151,169,255,.1); }
+    .detail-header h2 { margin: 0; font: 500 1.16rem var(--display); }
+    .detail-header p { margin: 4px 0 0; color: #8c99b5; font-size: .76rem; }
+    .close-detail { width: 32px; height: 32px; flex: 0 0 auto; border: 1px solid rgba(151,169,255,.18); border-radius: 9px; background: rgba(17,26,54,.72); color: #b3bed8; font-size: 1.05rem; cursor: pointer; }
+    .detail-grid { display: grid; grid-template-columns: minmax(0,1fr) 230px; gap: 24px; padding-top: 20px; }
+    .detail-content { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 13px; }
+    .detail-group { min-width: 0; padding: 14px; border: 1px solid rgba(151,169,255,.1); border-radius: 11px; background: rgba(8,14,33,.31); }
+    .detail-group.wide { grid-column: 1/-1; }
+    .detail-group h3 { margin: 0 0 10px; color: #cad7f6; font: 500 .84rem var(--display); }
+    .detail-list { display: grid; grid-template-columns: 1fr; gap: 7px; margin: 0; }
+    .detail-row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; font-size: .73rem; }
+    .detail-row dt { flex: 0 0 auto; color: #8491ae; }
+    .detail-row dd { min-width: 0; margin: 0; overflow-wrap: anywhere; color: #e0e6f5; text-align: right; }
+    .document-chips { display: flex; flex-wrap: wrap; gap: 7px; margin: 0; padding: 0; list-style: none; }
+    .document-chips li { max-width: 100%; overflow-wrap: anywhere; padding: 6px 9px; border: 1px solid rgba(112,161,255,.17); border-radius: 7px; background: rgba(49,83,151,.1); color: #bfd2ff; font-size: .7rem; }
+    .document-empty { margin: 0; color: #8b97b1; font-size: .76rem; }
+    .detail-side { display: flex; align-items: center; flex-direction: column; padding: 15px; border: 1px solid rgba(151,169,255,.1); border-radius: 12px; background: rgba(8,14,33,.31); }
+    .gauge {
+      display: grid;
+      width: 142px;
+      aspect-ratio: 1;
+      place-items: center;
+      margin: 4px 0 11px;
+      border-radius: 50%;
+      background: conic-gradient(from -90deg, #53b8ff 0%, #9a70ff var(--score), rgba(151,169,255,.11) var(--score), rgba(151,169,255,.11) 100%);
+      box-shadow: 0 0 30px rgba(91,113,247,.16);
+    }
+    .gauge-inner { display: grid; width: 116px; aspect-ratio: 1; place-content: center; border: 1px solid rgba(151,169,255,.1); border-radius: 50%; background: #101832; text-align: center; }
+    .gauge-value { color: #f1f2ff; font: 600 1.85rem/1 var(--display); letter-spacing: -.05em; }
+    .gauge-label { margin-top: 5px; color: #8b97b2; font-size: .67rem; }
+    .detail-score-caption { color: #9ba8c4; font-size: .73rem; text-align: center; }
+    .detail-timer { margin: 12px 0; color: #efcf91; font-size: .75rem; text-align: center; }
+    .detail-actions { display: grid; width: 100%; gap: 8px; margin-top: 8px; }
+    .detail-actions .button { width: 100%; min-height: 35px; font-size: .75rem; }
+    .message-select { width: 100%; min-height: 34px; padding: 6px 8px; border: 1px solid rgba(151,169,255,.16); border-radius: 8px; outline: none; background: rgba(8,14,33,.7); color: #e7ecfa; font-size: .73rem; }
+    .detail-feedback { min-height: 19px; margin: 8px 0 0; color: #a8dacd; font-size: .72rem; text-align: center; }
+
+    .notifications-section, .settings-section { margin-top: 20px; }
+    .section-heading-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 15px; margin-bottom: 12px; }
+    .section-heading-row h2 { margin: 0; font: 500 1.1rem var(--display); }
+    .section-heading-row p { margin: 3px 0 0; color: #8996b3; font-size: .75rem; }
+    .notifications-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 11px; }
+    .phone-notification {
+      min-width: 0;
+      padding: 13px 14px;
+      border: 1px solid rgba(151,169,255,.12);
+      border-radius: 13px;
+      background: linear-gradient(145deg, rgba(25,36,73,.72), rgba(13,20,43,.86));
+      box-shadow: 0 8px 22px rgba(0,0,0,.11), inset 0 1px rgba(255,255,255,.025);
+    }
+    .notification-top { display: flex; align-items: center; gap: 9px; margin-bottom: 8px; }
+    .notification-app-icon { display: grid; width: 29px; height: 29px; flex: 0 0 auto; place-items: center; border: 1px solid rgba(121,161,255,.23); border-radius: 9px; background: linear-gradient(145deg,rgba(61,143,255,.22),rgba(151,89,255,.2)); color: #b9d1ff; font-size: .78rem; }
+    .notification-heading { min-width: 0; flex: 1; }
+    .notification-heading strong { display: block; color: #e8edfb; font-size: .76rem; }
+    .notification-heading span { display: block; color: #8591ad; font-size: .66rem; }
+    .notification-time { flex: 0 0 auto; color: #818da8; font-size: .65rem; }
+    .notification-message { margin: 0; overflow-wrap: anywhere; color: #b9c4dc; font-size: .73rem; line-height: 1.5; }
+    .notification-empty { grid-column: 1/-1; padding: 23px; border: 1px dashed rgba(151,169,255,.16); border-radius: 12px; color: #8491ae; font-size: .8rem; text-align: center; }
+    .settings-grid { display: grid; grid-template-columns: .85fr 1.15fr; gap: 14px; }
+    .settings-card { padding: 18px; border: 1px solid rgba(151,169,255,.12); border-radius: 13px; background: rgba(14,21,46,.63); }
+    .settings-card h3 { margin: 0 0 13px; font: 500 .91rem var(--display); }
+    .setting-field { margin-bottom: 13px; }
+    .setting-field:last-child { margin-bottom: 0; }
+    .setting-field label { display: block; margin-bottom: 5px; color: #bfc9df; font-size: .75rem; font-weight: 600; }
+    .setting-field input, .setting-field textarea {
+      width: 100%;
+      min-height: 39px;
+      padding: 8px 10px;
+      border: 1px solid rgba(151,169,255,.15);
+      border-radius: 8px;
+      outline: none;
+      background: rgba(8,14,33,.74);
+      color: #eff2fc;
+      font-size: .77rem;
+    }
+    .setting-field textarea { min-height: 62px; resize: vertical; }
+    .setting-field input:focus, .setting-field textarea:focus { border-color: rgba(103,158,255,.72); box-shadow: 0 0 0 3px rgba(79,125,245,.1); }
+    .setting-help { margin: 5px 0 0; color: #7e8ba7; font-size: .68rem; }
+    .auto-message { padding: 10px 11px; border: 1px solid rgba(255,142,155,.17); border-radius: 8px; background: rgba(133,38,63,.08); color: #e6b2bb; font-size: .73rem; }
+    .settings-actions { display: flex; align-items: center; gap: 12px; margin-top: 14px; }
+    .settings-feedback { color: #a8dacd; font-size: .74rem; }
+    .dashboard-footer { padding: 22px 0 0; color: #74809b; font-size: .72rem; text-align: center; }
+    @media (max-width: 1050px) {
+      .stats-grid { grid-template-columns: repeat(3,minmax(0,1fr)); }
+      .chart-grid { grid-template-columns: 1fr 1fr; }
+      .nav-links { gap: 14px; }
+      .nav-right { gap: 12px; }
+    }
+    @media (max-width: 760px) {
+      .container { width: min(100% - 32px, 620px); }
+      .nav-wrap { min-height: 66px; }
+      .nav-links { display: none; }
+      .nav-user { display: none; }
+      .page-title-row { align-items: flex-start; flex-direction: column; }
+      .title-actions { justify-content: flex-start; }
+      .stats-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+      .chart-grid, .settings-grid { grid-template-columns: 1fr; }
+      .table-toolbar { align-items: flex-start; flex-direction: column; }
+      .search-control { width: 100%; }
+      .filters { width: 100%; }
+      .filter-select, .sort-select { flex: 1; min-width: 0; }
+      .detail-grid { grid-template-columns: 1fr; }
+      .detail-side { grid-row: 1; }
+      .detail-actions { max-width: 300px; }
+      .detail-content { grid-template-columns: 1fr; }
+      .detail-group.wide { grid-column: auto; }
+      .notifications-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 430px) {
+      .container { width: calc(100% - 26px); }
+      .stats-grid { gap: 9px; }
+      .stat-card { padding: 13px; }
+      .stat-number { font-size: 1.45rem; }
+      .stat-label { font-size: .68rem; }
+      .chart-holder { height: 210px; }
+      .panel, .table-panel, .detail-panel { padding: 14px; }
+      .title-actions { width: 100%; }
+      .title-actions .button { flex: 1; }
+      .section-heading-row { align-items: flex-start; flex-direction: column; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container nav-wrap">
+      <a class="brand" href="index.html" aria-label="GlobalJobs Portal home">
+        <span class="brand-mark" aria-hidden="true">✦</span>
+        <span>GlobalJobs <span class="gradient-text">Portal</span></span>
+      </a>
+      <div class="nav-right">
+        <nav class="nav-links" aria-label="Admin sections">
+          <a href="#applications">Applications</a>
+          <a href="#notifications">Notifications</a>
+          <a href="#settings">Settings</a>
+        </nav>
+        <span class="nav-user"><span class="user-dot"></span> Admin</span>
+        <button class="logout" type="button" id="logout">Log out</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container dashboard-main">
+    <div class="error-banner" id="dashboard-error" role="alert"></div>
+    <div class="page-title-row">
+      <div>
+        <span class="eyebrow">Admin workspace</span>
+        <h1>Application <span class="gradient-text">Dashboard</span></h1>
+        <p class="page-subtitle">Review candidate applications and manage the demo workflow.</p>
+      </div>
+      <div class="title-actions">
+        <button class="button button-secondary" type="button" id="simulate-days">◷ Simulate 3 Days Later</button>
+        <button class="button" type="button" id="load-demo">＋ Load Demo Data</button>
+      </div>
+    </div>
+
+    <section class="stats-grid" aria-label="Application statistics">
+      <article class="stat-card"><div class="stat-top"><span class="stat-label">Total applications</span><span class="stat-icon">▤</span></div><strong class="stat-number" id="stat-total">0</strong></article>
+      <article class="stat-card"><div class="stat-top"><span class="stat-label">Eligible</span><span class="stat-icon">✓</span></div><strong class="stat-number green" id="stat-eligible">0</strong></article>
+      <article class="stat-card"><div class="stat-top"><span class="stat-label">Not eligible</span><span class="stat-icon">!</span></div><strong class="stat-number red" id="stat-not-eligible">0</strong></article>
+      <article class="stat-card"><div class="stat-top"><span class="stat-label">Pending review</span><span class="stat-icon">◷</span></div><strong class="stat-number amber" id="stat-pending">0</strong></article>
+      <article class="stat-card"><div class="stat-top"><span class="stat-label">Documents scheduled for deletion</span><span class="stat-icon">⌫</span></div><strong class="stat-number" id="stat-scheduled">0</strong></article>
+    </section>
+
+    <section class="chart-grid" aria-label="Application charts">
+      <article class="panel">
+        <div class="panel-heading"><div><h2>Applications over time</h2><p>Submissions in the last 14 days</p></div></div>
+        <div class="chart-holder"><canvas id="time-chart" aria-label="Applications over the last 14 days" role="img"></canvas><div class="chart-fallback" id="time-chart-fallback">Charts need an internet connection to load Chart.js.</div></div>
+      </article>
+      <article class="panel">
+        <div class="panel-heading"><div><h2>Applications by country</h2><p>Candidate destination preferences</p></div></div>
+        <div class="chart-holder"><canvas id="country-chart" aria-label="Applications grouped by preferred country" role="img"></canvas><div class="chart-fallback" id="country-chart-fallback">Charts need an internet connection to load Chart.js.</div></div>
+      </article>
+    </section>
+
+    <section class="panel table-panel" id="applications">
+      <div class="panel-heading">
+        <div><h2 class="section-title">Applications</h2><p>Search, filter, sort and view candidate details.</p></div>
+      </div>
+      <div class="table-toolbar">
+        <div class="filters">
+          <input class="filter-control search-control" id="search-applications" type="search" placeholder="Search name, email or ID" aria-label="Search applications">
+          <select class="filter-control filter-select" id="filter-status" aria-label="Filter by status"><option value="">All statuses</option><option value="Eligible">Eligible</option><option value="Not Eligible">Not Eligible</option><option value="Pending">Pending</option></select>
+          <select class="filter-control filter-select" id="filter-country" aria-label="Filter by country"><option value="">All countries</option></select>
+          <select class="filter-control sort-select" id="sort-applications" aria-label="Sort applications">
+            <option value="newest">Newest first</option>
+            <option value="oldest">Oldest first</option>
+            <option value="name">Name A–Z</option>
+            <option value="score-desc">Score: high to low</option>
+            <option value="score-asc">Score: low to high</option>
+          </select>
+        </div>
+        <span class="results-count" id="results-count">0 applications</span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Candidate</th><th>Application ID</th><th>Country</th><th>Score</th><th>Status</th><th>Documents</th><th>Deletion countdown</th><th>Submitted</th><th></th></tr></thead>
+          <tbody id="applications-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="detail-panel" id="candidate-detail" aria-live="polite" hidden></section>
+
+    <section class="notifications-section" id="notifications">
+      <div class="section-heading-row"><div><h2>Notifications log</h2><p>Messages sent by automatic document cleanup and the Send Message action.</p></div></div>
+      <div class="notifications-grid" id="notifications-list"></div>
+    </section>
+
+    <section class="settings-section" id="settings">
+      <div class="section-heading-row"><div><h2>Settings</h2><p>Configure eligibility rules and candidate message templates.</p></div></div>
+      <div class="settings-grid">
+        <form class="settings-card" id="rule-settings">
+          <h3>Eligibility &amp; document cleanup</h3>
+          <div class="setting-field">
+            <label for="eligibility-threshold">Eligibility threshold (%)</label>
+            <input id="eligibility-threshold" name="threshold" type="number" min="0" max="100" step="1" required>
+            <p class="setting-help">Applications below this score are marked Not Eligible.</p>
+          </div>
+          <div class="setting-field">
+            <label for="auto-delete-days">Auto-delete days</label>
+            <input id="auto-delete-days" name="autoDeleteDays" type="number" min="1" max="365" step="1" required>
+            <p class="setting-help">Countdown begins when an application is marked Not Eligible.</p>
+          </div>
+          <div class="settings-actions"><button class="button" type="submit">Save settings</button><span class="settings-feedback" id="rule-feedback" aria-live="polite"></span></div>
+        </form>
+        <form class="settings-card" id="message-settings">
+          <h3>Message templates</h3>
+          <div class="setting-field"><label for="template-eligible">Eligible message</label><textarea id="template-eligible" name="eligible" required></textarea></div>
+          <div class="setting-field"><label for="template-not-eligible">Not eligible message</label><textarea id="template-not-eligible" name="notEligible" required></textarea></div>
+          <div class="setting-field"><label for="template-pending">Pending review message</label><textarea id="template-pending" name="pending" required></textarea></div>
+          <div class="setting-field"><label for="template-custom">General message</label><textarea id="template-custom" name="custom" required></textarea><p class="setting-help">Templates support {{name}}, {{applicationId}}, {{country}} and {{eligibility}}.</p></div>
+          <div class="setting-field"><label>Automatic deletion message</label><div class="auto-message">You are not eligible for this opportunity, and your uploaded documents have been removed from our portal.</div><p class="setting-help">This required automatic notice is fixed for the demo workflow.</p></div>
+          <div class="settings-actions"><button class="button" type="submit">Save templates</button><span class="settings-feedback" id="message-feedback" aria-live="polite"></span></div>
+        </form>
+      </div>
+    </section>
+    <footer class="dashboard-footer">GlobalJobs Portal · Admin demo. Applications and notification messages stay in this browser.</footer>
+  </main>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    (function () {
+      "use strict";
+      var APPLICATIONS_KEY = "globalJobsPortalApplicationsV1";
+      var NOTIFICATIONS_KEY = "globalJobsPortalNotificationsV1";
+      var SETTINGS_KEY = "globalJobsPortalAdminSettingsV1";
+      var SESSION_KEY = "globalJobsPortalAdminSession";
+      var AUTO_DELETE_MESSAGE = "You are not eligible for this opportunity, and your uploaded documents have been removed from our portal.";
+      var DEFAULT_SETTINGS = {
+        threshold: 60,
+        autoDeleteDays: 3,
+        templates: {
+          eligible: "Hello {{name}}, your application {{applicationId}} has been approved. We will be in touch with next steps.",
+          notEligible: "Hello {{name}}, your application {{applicationId}} is not eligible at this time. Thank you for your interest.",
+          pending: "Hello {{name}}, your application {{applicationId}} is under review. We will share an update soon.",
+          custom: "Hello {{name}}, thank you for applying to GlobalJobs Portal."
+        }
+      };
+      var applications = [];
+      var notifications = [];
+      var settings = JSON.parse(JSON.stringify(DEFAULT_SETTINGS));
+      var stateReady = false;
+      var selectedApplicationId = null;
+      var timeChart = null;
+      var countryChart = null;
+      var toastTimer = 0;
+      var dashboardError = document.getElementById("dashboard-error");
+
+      try {
+        if (window.sessionStorage.getItem(SESSION_KEY) !== "true") {
+          window.location.replace("admin-login.html");
+          return;
+        }
+      } catch (sessionFailure) {
+        dashboardError.textContent = "This browser could not read the demo session. Enable session storage, then sign in again.";
+        dashboardError.classList.add("visible");
+        console.error("Could not read the demo admin session.", sessionFailure);
+        return;
+      }
+
+      function escapeHtml(value) {
+        return String(value == null ? "" : value).replace(/[&<>"']/g, function (character) {
+          return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[character];
+        });
+      }
+
+      function showError(message) {
+        dashboardError.textContent = message;
+        dashboardError.classList.toggle("visible", Boolean(message));
+      }
+
+      function showToast(message) {
+        var toast = document.getElementById("toast");
+        toast.textContent = message;
+        toast.classList.add("visible");
+        window.clearTimeout(toastTimer);
+        toastTimer = window.setTimeout(function () { toast.classList.remove("visible"); }, 4200);
+      }
+
+      function loadState() {
+        try {
+          var appRaw = window.localStorage.getItem(APPLICATIONS_KEY);
+          var notificationRaw = window.localStorage.getItem(NOTIFICATIONS_KEY);
+          var settingsRaw = window.localStorage.getItem(SETTINGS_KEY);
+          applications = appRaw ? JSON.parse(appRaw) : [];
+          notifications = notificationRaw ? JSON.parse(notificationRaw) : [];
+          if (!Array.isArray(applications)) throw new Error("Saved applications are not in the expected list format.");
+          if (!Array.isArray(notifications)) throw new Error("Saved notifications are not in the expected list format.");
+          if (settingsRaw) {
+            var storedSettings = JSON.parse(settingsRaw);
+            if (!storedSettings || typeof storedSettings !== "object" || Array.isArray(storedSettings)) {
+              throw new Error("Saved dashboard settings are not in the expected format.");
+            }
+            settings = Object.assign({}, DEFAULT_SETTINGS, storedSettings);
+            settings.templates = Object.assign({}, DEFAULT_SETTINGS.templates, storedSettings.templates || {});
+          }
+          stateReady = true;
+          return true;
+        } catch (error) {
+          stateReady = false;
+          showError("Could not read saved dashboard data: " + error.message + " Check this browser's local storage.");
+          console.error("Could not load the admin dashboard state.", error);
+          return false;
+        }
+      }
+
+      function persistState() {
+        try {
+          window.localStorage.setItem(APPLICATIONS_KEY, JSON.stringify(applications));
+          window.localStorage.setItem(NOTIFICATIONS_KEY, JSON.stringify(notifications));
+          window.localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+          showError("");
+          return true;
+        } catch (error) {
+          showError("Could not save dashboard changes in local storage: " + error.message);
+          console.error("Could not persist admin dashboard changes.", error);
+          return false;
+        }
+      }
+
+      function displayDate(value) {
+        var date = new Date(value);
+        return Number.isNaN(date.getTime()) ? "—" : date.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
+      }
+
+      function displayDateTime(value) {
+        var date = new Date(value);
+        return Number.isNaN(date.getTime()) ? "—" : date.toLocaleString("en-IN", { day: "numeric", month: "short", year: "numeric", hour: "numeric", minute: "2-digit" });
+      }
+
+      function getCandidateName(application) {
+        return application.personalDetails && application.personalDetails.fullName
+          ? application.personalDetails.fullName
+          : application.fullName || "Candidate";
+      }
+
+      function getScore(application) {
+        var score = Number(application.eligibility);
+        return Number.isFinite(score) ? Math.min(100, Math.max(0, score)) : 0;
+      }
+
+      function getStatus(application) {
+        var value = String(application.status || "Pending").toLowerCase();
+        if (value === "eligible") return "Eligible";
+        if (value === "not eligible" || value === "not-eligible") return "Not Eligible";
+        return "Pending";
+      }
+
+      function getSubmittedAt(application) {
+        return application.submittedAt || application.submissionDate || new Date().toISOString();
+      }
+
+      function candidateById(id) {
+        return applications.find(function (application) { return application.id === id; });
+      }
+
+      function setCountdown(application, now) {
+        if (!application.notEligibleSince) application.notEligibleSince = new Date(now).toISOString();
+        application.autoDeleteDays = settings.autoDeleteDays;
+        application.autoDeleteAt = new Date(Date.parse(application.notEligibleSince) + settings.autoDeleteDays * 86400000).toISOString();
+        application.autoDeleteCompletedAt = null;
+      }
+
+      function createNotification(application, message, type, now) {
+        notifications.push({
+          id: "GJPN-" + Date.now().toString(36).toUpperCase() + "-" + Math.random().toString(36).slice(2, 8).toUpperCase(),
+          applicationId: application.id,
+          candidateName: getCandidateName(application),
+          time: new Date(now || Date.now()).toISOString(),
+          message: message,
+          type: type
+        });
+      }
+
+      function evaluatePolicy(nowValue) {
+        if (!stateReady) return;
+        var now = nowValue == null ? Date.now() : nowValue;
+        var changed = false;
+        applications.forEach(function (application) {
+          if (!application || !application.id) return;
+          var score = getScore(application);
+          var status = getStatus(application);
+          var completed = Boolean(application.autoDeleteCompletedAt);
+          if (!completed && score < settings.threshold) {
+            if (status !== "Not Eligible") {
+              application.statusBeforePolicy = status;
+              application.status = "Not Eligible";
+              application.autoDeleteReason = "threshold";
+              setCountdown(application, now);
+              changed = true;
+              status = "Not Eligible";
+            } else if (!application.autoDeleteReason) {
+              application.statusBeforePolicy = "Eligible";
+              application.autoDeleteReason = "threshold";
+              setCountdown(application, now);
+              changed = true;
+            } else if (!application.autoDeleteAt || application.autoDeleteDays !== settings.autoDeleteDays) {
+              setCountdown(application, now);
+              changed = true;
+            }
+          } else if (!completed && score >= settings.threshold && status === "Not Eligible"
+            && (!application.autoDeleteReason || application.autoDeleteReason === "threshold")) {
+            application.status = application.statusBeforePolicy === "Pending" ? "Pending" : "Eligible";
+            delete application.statusBeforePolicy;
+            delete application.autoDeleteReason;
+            delete application.notEligibleSince;
+            delete application.autoDeleteAt;
+            delete application.autoDeleteDays;
+            changed = true;
+            status = getStatus(application);
+          } else if (!completed && status === "Not Eligible" && !application.autoDeleteAt) {
+            setCountdown(application, now);
+            changed = true;
+          } else if (!completed && status === "Not Eligible" && application.autoDeleteDays !== settings.autoDeleteDays) {
+            setCountdown(application, now);
+            changed = true;
+          }
+
+          if (getStatus(application) === "Not Eligible" && !application.autoDeleteCompletedAt) {
+            var deadline = Date.parse(application.autoDeleteAt);
+            if (Number.isFinite(deadline) && deadline <= now) {
+              application.documents = [];
+              application.documentsDeletedAt = new Date(now).toISOString();
+              application.autoDeleteCompletedAt = new Date(now).toISOString();
+              delete application.autoDeleteAt;
+              if (!application.autoDeleteMessageSentAt) {
+                createNotification(application, AUTO_DELETE_MESSAGE, "automatic", now);
+                application.autoDeleteMessageSentAt = new Date(now).toISOString();
+              }
+              changed = true;
+            }
+          }
+        });
+        if (changed) persistState();
+      }
+
+      function formatCountdown(deadlineValue) {
+        var deadline = Date.parse(deadlineValue);
+        if (!Number.isFinite(deadline)) return "—";
+        var remaining = deadline - Date.now();
+        if (remaining <= 0) return "Deleting…";
+        var totalSeconds = Math.floor(remaining / 1000);
+        var days = Math.floor(totalSeconds / 86400);
+        var hours = Math.floor((totalSeconds % 86400) / 3600);
+        var minutes = Math.floor((totalSeconds % 3600) / 60);
+        var seconds = totalSeconds % 60;
+        return days + "d " + String(hours).padStart(2, "0") + "h " + String(minutes).padStart(2, "0") + "m " + String(seconds).padStart(2, "0") + "s";
+      }
+
+      function updateCountdownLabels() {
+        document.querySelectorAll("[data-countdown-id]").forEach(function (element) {
+          var application = candidateById(element.dataset.countdownId);
+          if (!application || application.autoDeleteCompletedAt) {
+            element.textContent = application && application.autoDeleteCompletedAt ? "Documents removed" : "—";
+            element.classList.remove("expired");
+            return;
+          }
+          element.textContent = formatCountdown(application.autoDeleteAt);
+          element.classList.toggle("expired", element.textContent === "Deleting…");
+        });
+      }
+
+      function badgeClass(status) {
+        if (status === "Eligible") return "eligible";
+        if (status === "Not Eligible") return "not-eligible";
+        return "pending";
+      }
+
+      function renderStats() {
+        var eligible = 0;
+        var notEligible = 0;
+        var pending = 0;
+        var scheduled = 0;
+        applications.forEach(function (application) {
+          var status = getStatus(application);
+          if (status === "Eligible") eligible += 1;
+          else if (status === "Not Eligible") {
+            notEligible += 1;
+            if (!application.autoDeleteCompletedAt) scheduled += 1;
+          } else pending += 1;
+        });
+        document.getElementById("stat-total").textContent = applications.length.toLocaleString("en-IN");
+        document.getElementById("stat-eligible").textContent = eligible.toLocaleString("en-IN");
+        document.getElementById("stat-not-eligible").textContent = notEligible.toLocaleString("en-IN");
+        document.getElementById("stat-pending").textContent = pending.toLocaleString("en-IN");
+        document.getElementById("stat-scheduled").textContent = scheduled.toLocaleString("en-IN");
+      }
+
+      function renderCountryFilter() {
+        var select = document.getElementById("filter-country");
+        var previous = select.value;
+        var countries = Array.from(new Set(applications.map(function (application) {
+          return application.personalDetails && application.personalDetails.country || application.country || "";
+        }).filter(Boolean))).sort(function (a, b) { return a.localeCompare(b); });
+        select.innerHTML = '<option value="">All countries</option>' + countries.map(function (country) {
+          return '<option value="' + escapeHtml(country) + '">' + escapeHtml(country) + "</option>";
+        }).join("");
+        if (countries.indexOf(previous) !== -1) select.value = previous;
+      }
+
+      function getFilteredApplications() {
+        var query = document.getElementById("search-applications").value.trim().toLowerCase();
+        var statusFilter = document.getElementById("filter-status").value;
+        var countryFilter = document.getElementById("filter-country").value;
+        var sortMode = document.getElementById("sort-applications").value;
+        var filtered = applications.filter(function (application) {
+          var details = application.personalDetails || {};
+          var status = getStatus(application);
+          var country = details.country || application.country || "";
+          var searchText = [
+            getCandidateName(application),
+            application.id,
+            details.email || application.email,
+            details.city || application.city,
+            country,
+            details.jobCategory || application.jobCategory
+          ].join(" ").toLowerCase();
+          return (!query || searchText.indexOf(query) !== -1)
+            && (!statusFilter || status === statusFilter)
+            && (!countryFilter || country === countryFilter);
+        });
+        filtered.sort(function (a, b) {
+          if (sortMode === "oldest") return Date.parse(getSubmittedAt(a)) - Date.parse(getSubmittedAt(b));
+          if (sortMode === "name") return getCandidateName(a).localeCompare(getCandidateName(b));
+          if (sortMode === "score-desc") return getScore(b) - getScore(a);
+          if (sortMode === "score-asc") return getScore(a) - getScore(b);
+          return Date.parse(getSubmittedAt(b)) - Date.parse(getSubmittedAt(a));
+        });
+        return filtered;
+      }
+
+      function renderTable() {
+        renderCountryFilter();
+        var filtered = getFilteredApplications();
+        var tbody = document.getElementById("applications-body");
+        document.getElementById("results-count").textContent = filtered.length + (filtered.length === 1 ? " application" : " applications");
+        if (!filtered.length) {
+          tbody.innerHTML = '<tr><td class="empty-row" colspan="9">No applications match these filters. Load demo data or adjust your search.</td></tr>';
+          updateCountdownLabels();
+          return;
+        }
+        tbody.innerHTML = filtered.map(function (application) {
+          var details = application.personalDetails || {};
+          var status = getStatus(application);
+          var country = details.country || application.country || "—";
+          var documents = Array.isArray(application.documents) ? application.documents : [];
+          var deadline = status === "Not Eligible" && !application.autoDeleteCompletedAt ? application.autoDeleteAt : "";
+          var timerText = application.autoDeleteCompletedAt ? "Documents removed" : (deadline ? formatCountdown(deadline) : "—");
+          return '<tr>' +
+            '<td class="candidate-cell"><strong>' + escapeHtml(getCandidateName(application)) + '</strong><span>' + escapeHtml(details.email || application.email || "") + '</span></td>' +
+            '<td>' + escapeHtml(application.id) + '</td>' +
+            '<td>' + escapeHtml(country) + '</td>' +
+            '<td class="score-cell">' + getScore(application) + '%</td>' +
+            '<td><span class="status-badge ' + badgeClass(status) + '">' + escapeHtml(status) + '</span></td>' +
+            '<td>' + documents.length + '</td>' +
+            '<td>' + (application.autoDeleteCompletedAt ? '<span class="muted-cell">Documents removed</span>' : (deadline ? '<span class="countdown" data-countdown-id="' + escapeHtml(application.id) + '">' + escapeHtml(timerText) + '</span>' : '<span class="muted-cell">—</span>')) + '</td>' +
+            '<td class="muted-cell">' + escapeHtml(displayDate(getSubmittedAt(application))) + '</td>' +
+            '<td><button class="view-button" type="button" data-view-id="' + escapeHtml(application.id) + '">View</button></td>' +
+          '</tr>';
+        }).join("");
+        tbody.querySelectorAll("[data-view-id]").forEach(function (button) {
+          button.addEventListener("click", function () { showCandidate(button.dataset.viewId); });
+        });
+        updateCountdownLabels();
+      }
+
+      function chartFallback(canvasId, fallbackId, visible) {
+        document.getElementById(canvasId).style.display = visible ? "none" : "block";
+        document.getElementById(fallbackId).style.display = visible ? "flex" : "none";
+      }
+
+      function renderCharts() {
+        if (typeof window.Chart !== "function") {
+          chartFallback("time-chart", "time-chart-fallback", true);
+          chartFallback("country-chart", "country-chart-fallback", true);
+          return;
+        }
+        chartFallback("time-chart", "time-chart-fallback", false);
+        chartFallback("country-chart", "country-chart-fallback", false);
+        var days = [];
+        var counts = Object.create(null);
+        for (var offset = 13; offset >= 0; offset -= 1) {
+          var date = new Date();
+          date.setHours(0, 0, 0, 0);
+          date.setDate(date.getDate() - offset);
+          var key = date.getFullYear() + "-" + String(date.getMonth() + 1).padStart(2, "0") + "-" + String(date.getDate()).padStart(2, "0");
+          days.push({ key: key, label: date.toLocaleDateString("en-IN", { day: "numeric", month: "short" }) });
+          counts[key] = 0;
+        }
+        applications.forEach(function (application) {
+          var date = new Date(getSubmittedAt(application));
+          if (Number.isNaN(date.getTime())) return;
+          var key = date.getFullYear() + "-" + String(date.getMonth() + 1).padStart(2, "0") + "-" + String(date.getDate()).padStart(2, "0");
+          if (Object.prototype.hasOwnProperty.call(counts, key)) counts[key] += 1;
+        });
+        var chartColors = ["#5e8bff", "#a56dff", "#62ddff", "#70deb0", "#ffcd78", "#fa8eaa", "#91a4ff", "#48c1b2", "#db86ff", "#edaa73"];
+        if (timeChart) timeChart.destroy();
+        timeChart = new window.Chart(document.getElementById("time-chart"), {
+          type: "line",
+          data: {
+            labels: days.map(function (day) { return day.label; }),
+            datasets: [{
+              label: "Applications",
+              data: days.map(function (day) { return counts[day.key]; }),
+              borderColor: "#72a7ff",
+              backgroundColor: "rgba(91,139,255,.16)",
+              borderWidth: 2,
+              pointRadius: 3,
+              pointHoverRadius: 5,
+              pointBackgroundColor: "#b1a2ff",
+              fill: true,
+              tension: .36
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+              x: { grid: { display: false }, ticks: { color: "#8996b3", maxRotation: 0, autoSkip: true, maxTicksLimit: 7 } },
+              y: { beginAtZero: true, ticks: { color: "#8996b3", precision: 0, stepSize: 1 }, grid: { color: "rgba(151,169,255,.09)" } }
+            }
+          }
+        });
+        var countryCounts = Object.create(null);
+        applications.forEach(function (application) {
+          var country = application.personalDetails && application.personalDetails.country || application.country || "Unspecified";
+          countryCounts[country] = (countryCounts[country] || 0) + 1;
+        });
+        var countryEntries = Object.keys(countryCounts).map(function (country) {
+          return { country: country, count: countryCounts[country] };
+        }).sort(function (a, b) { return b.count - a.count || a.country.localeCompare(b.country); }).slice(0, 9);
+        if (countryChart) countryChart.destroy();
+        countryChart = new window.Chart(document.getElementById("country-chart"), {
+          type: "doughnut",
+          data: {
+            labels: countryEntries.map(function (entry) { return entry.country; }),
+            datasets: [{
+              data: countryEntries.map(function (entry) { return entry.count; }),
+              backgroundColor: chartColors,
+              borderColor: "#111a36",
+              borderWidth: 3,
+              hoverOffset: 5
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: "63%",
+            plugins: {
+              legend: { position: "right", labels: { color: "#aeb9d2", boxWidth: 9, boxHeight: 9, padding: 11, font: { size: 10 } } }
+            }
+          }
+        });
+      }
+
+      function renderNotifications() {
+        var list = document.getElementById("notifications-list");
+        var sorted = notifications.slice().sort(function (a, b) { return Date.parse(b.time) - Date.parse(a.time); });
+        if (!sorted.length) {
+          list.innerHTML = '<div class="notification-empty">No messages sent yet. Automatic deletion messages and messages sent from a candidate profile will appear here.</div>';
+          return;
+        }
+        list.innerHTML = sorted.map(function (notification) {
+          var typeLabel = notification.type === "automatic" ? "Automatic document notice" : "GlobalJobs Portal";
+          return '<article class="phone-notification">' +
+            '<div class="notification-top"><span class="notification-app-icon" aria-hidden="true">✦</span>' +
+              '<span class="notification-heading"><strong>' + escapeHtml(typeLabel) + '</strong><span>' + escapeHtml(notification.candidateName || "Candidate") + '</span></span>' +
+              '<time class="notification-time" datetime="' + escapeHtml(notification.time) + '">' + escapeHtml(displayDateTime(notification.time)) + '</time></div>' +
+            '<p class="notification-message">' + escapeHtml(notification.message) + '</p>' +
+          '</article>';
+        }).join("");
+      }
+
+      function renderDashboard() {
+        if (!stateReady) return;
+        renderStats();
+        renderTable();
+        renderCharts();
+        renderNotifications();
+        if (selectedApplicationId && candidateById(selectedApplicationId)) showCandidate(selectedApplicationId, false);
+      }
+
+      function formatEducation(value) {
+        var labels = {
+          "high-school": "High school",
+          diploma: "Diploma / vocational",
+          bachelors: "Bachelor's degree",
+          masters: "Master's degree",
+          doctorate: "Doctorate"
+        };
+        return labels[value] || value || "—";
+      }
+
+      function ageFromDate(dateString) {
+        var birthDate = new Date(dateString + "T00:00:00");
+        if (Number.isNaN(birthDate.getTime())) return "—";
+        var today = new Date();
+        var age = today.getFullYear() - birthDate.getFullYear();
+        var birthdayNotReached = today.getMonth() < birthDate.getMonth()
+          || (today.getMonth() === birthDate.getMonth() && today.getDate() < birthDate.getDate());
+        return birthdayNotReached ? age - 1 : age;
+      }
+
+      function templateFor(status) {
+        if (status === "Eligible") return settings.templates.eligible;
+        if (status === "Not Eligible") return settings.templates.notEligible;
+        return settings.templates.pending;
+      }
+
+      function fillTemplate(template, application) {
+        var details = application.personalDetails || {};
+        var values = {
+          name: getCandidateName(application),
+          applicationId: application.id,
+          country: details.country || application.country || "",
+          eligibility: getScore(application)
+        };
+        return String(template || "").replace(/\{\{\s*(name|applicationId|country|eligibility)\s*\}\}/g, function (match, key) {
+          return values[key];
+        });
+      }
+
+      function showCandidate(id, shouldScroll) {
+        var application = candidateById(id);
+        if (!application) return;
+        selectedApplicationId = id;
+        var details = application.personalDetails || {};
+        var status = getStatus(application);
+        var documents = Array.isArray(application.documents) ? application.documents : [];
+        var score = getScore(application);
+        var detail = document.getElementById("candidate-detail");
+        var rows = [
+          ["Full name", details.fullName || application.fullName || "—"],
+          ["Phone", details.phone || application.phone || "—"],
+          ["Email", details.email || application.email || "—"],
+          ["Date of birth", details.dateOfBirth ? displayDate(details.dateOfBirth) : "—"],
+          ["Age", details.dateOfBirth ? String(ageFromDate(details.dateOfBirth)) : "—"],
+          ["City", details.city || application.city || "—"],
+          ["Highest education", formatEducation(details.education || application.education)],
+          ["Work experience", details.experience == null ? "—" : details.experience + (Number(details.experience) === 1 ? " year" : " years")],
+          ["Job category", details.jobCategory || application.jobCategory || "—"],
+          ["Preferred country", details.country || application.country || "—"],
+          ["Application ID", application.id],
+          ["Submitted", displayDateTime(getSubmittedAt(application))]
+        ];
+        var detailsHtml = rows.map(function (row) {
+          return '<div class="detail-row"><dt>' + escapeHtml(row[0]) + '</dt><dd>' + escapeHtml(row[1]) + '</dd></div>';
+        }).join("");
+        var documentsHtml = documents.length
+          ? '<ul class="document-chips">' + documents.map(function (doc) {
+              return "<li>" + escapeHtml(doc.name || doc.type || "Document") + "</li>";
+            }).join("") + "</ul>"
+          : '<p class="document-empty">' + (application.documentsDeletedAt
+            ? "Documents removed on " + displayDateTime(application.documentsDeletedAt)
+            : "No document files were saved for this application.") + "</p>";
+        var timer = status === "Not Eligible" && !application.autoDeleteCompletedAt
+          ? '<p class="detail-timer">Document deletion in <span data-countdown-id="' + escapeHtml(application.id) + '">' + escapeHtml(formatCountdown(application.autoDeleteAt)) + "</span></p>"
+          : (application.autoDeleteCompletedAt ? '<p class="detail-timer">Documents removed on ' + escapeHtml(displayDateTime(application.documentsDeletedAt)) + "</p>" : "");
+        var approveDisabled = score < settings.threshold && status !== "Eligible" ? " disabled title=\"Below the current eligibility threshold\"" : "";
+        detail.innerHTML =
+          '<div class="detail-header"><div><h2>' + escapeHtml(getCandidateName(application)) + '</h2><p>' + escapeHtml(application.id) + ' · <span class="status-badge ' + badgeClass(status) + '">' + escapeHtml(status) + '</span></p></div><button class="close-detail" type="button" aria-label="Close candidate details" id="close-detail">×</button></div>' +
+          '<div class="detail-grid">' +
+            '<div class="detail-content">' +
+              '<section class="detail-group wide"><h3>Candidate details</h3><dl class="detail-list">' + detailsHtml + '</dl></section>' +
+              '<section class="detail-group wide"><h3>Uploaded documents (' + documents.length + ')</h3>' + documentsHtml + '</section>' +
+            '</div>' +
+            '<aside class="detail-side">' +
+              '<div class="gauge" style="--score:' + score + '%" role="img" aria-label="Eligibility ' + score + ' percent"><div class="gauge-inner"><span class="gauge-value">' + score + '%</span><span class="gauge-label">Eligibility score</span></div></div>' +
+              '<span class="detail-score-caption">Current threshold: ' + settings.threshold + '%</span>' + timer +
+              '<div class="detail-actions">' +
+                '<button class="button button-success" type="button" id="approve-candidate"' + approveDisabled + '>✓ Approve</button>' +
+                '<button class="button button-danger" type="button" id="reject-candidate">✕ Reject</button>' +
+                '<select class="message-select" id="message-template-select" aria-label="Choose a message template"><option value="status">Use status template</option><option value="custom">Use general message</option></select>' +
+                '<button class="button button-secondary" type="button" id="send-candidate-message">✉ Send Message</button>' +
+              '</div><p class="detail-feedback" id="detail-feedback" aria-live="polite"></p>' +
+            '</aside>' +
+          '</div>';
+        detail.hidden = false;
+        detail.querySelector("#close-detail").addEventListener("click", function () {
+          detail.hidden = true;
+          selectedApplicationId = null;
+        });
+        detail.querySelector("#approve-candidate").addEventListener("click", function () { updateCandidateStatus(id, "Eligible"); });
+        detail.querySelector("#reject-candidate").addEventListener("click", function () { updateCandidateStatus(id, "Not Eligible"); });
+        detail.querySelector("#send-candidate-message").addEventListener("click", function () { sendCandidateMessage(id); });
+        if (shouldScroll !== false) detail.scrollIntoView({ behavior: "smooth", block: "start" });
+        updateCountdownLabels();
+      }
+
+      function updateCandidateStatus(id, newStatus) {
+        var application = candidateById(id);
+        if (!application) return;
+        var feedback = document.getElementById("detail-feedback");
+        if (newStatus === "Eligible" && getScore(application) < settings.threshold) {
+          feedback.textContent = "This score is below the current threshold; the application cannot be approved by this demo rule.";
+          feedback.style.color = "#ffb6bf";
+          return;
+        }
+        application.status = newStatus;
+        application.statusUpdatedAt = new Date().toISOString();
+        if (newStatus === "Eligible") {
+          delete application.statusBeforePolicy;
+          delete application.autoDeleteReason;
+          delete application.notEligibleSince;
+          delete application.autoDeleteAt;
+          delete application.autoDeleteDays;
+          application.autoDeleteCompletedAt = null;
+        } else if (!application.autoDeleteCompletedAt) {
+          application.autoDeleteReason = "admin";
+          setCountdown(application, Date.now());
+        }
+        if (!persistState()) return;
+        evaluatePolicy(Date.now());
+        renderDashboard();
+        showToast(getCandidateName(application) + " marked " + newStatus + ".");
+      }
+
+      function sendCandidateMessage(id) {
+        var application = candidateById(id);
+        if (!application) return;
+        var mode = document.getElementById("message-template-select").value;
+        var status = getStatus(application);
+        var template = mode === "custom" ? settings.templates.custom : templateFor(status);
+        var message = fillTemplate(template, application).trim();
+        if (!message) {
+          document.getElementById("detail-feedback").textContent = "The selected message template is empty.";
+          return;
+        }
+        createNotification(application, message, "manual", Date.now());
+        if (!persistState()) return;
+        renderNotifications();
+        document.getElementById("detail-feedback").textContent = "Message added to the demo notifications log.";
+        document.getElementById("detail-feedback").style.color = "#a8dacd";
+      }
+
+      function renderSettings() {
+        document.getElementById("eligibility-threshold").value = settings.threshold;
+        document.getElementById("auto-delete-days").value = settings.autoDeleteDays;
+        document.getElementById("template-eligible").value = settings.templates.eligible;
+        document.getElementById("template-not-eligible").value = settings.templates.notEligible;
+        document.getElementById("template-pending").value = settings.templates.pending;
+        document.getElementById("template-custom").value = settings.templates.custom;
+      }
+
+      function loadDemoData() {
+        if (!stateReady) return;
+        var existingIds = new Set(applications.map(function (application) { return application.id; }));
+        var candidates = [
+          ["Aditi Rao", "aditi.rao@example.com", "London", "United Kingdom", "IT & Software", "masters", 7, 86, "Eligible"],
+          ["Rohan Mehta", "rohan.mehta@example.com", "Mumbai", "Canada", "Engineering", "bachelors", 5, 72, "Eligible"],
+          ["Isha Kapoor", "isha.kapoor@example.com", "Delhi", "Australia", "Healthcare", "bachelors", 2, 54, "Not Eligible"],
+          ["Vikram Singh", "vikram.singh@example.com", "Jaipur", "United Arab Emirates", "Construction & Skilled Trades", "diploma", 1, 48, "Not Eligible"],
+          ["Nisha Patel", "nisha.patel@example.com", "Ahmedabad", "Singapore", "Finance & Accounting", "masters", 9, 92, "Eligible"],
+          ["Arjun Nair", "arjun.nair@example.com", "Kochi", "Germany", "IT & Software", "bachelors", 4, 63, "Pending"],
+          ["Priya Reddy", "priya.reddy@example.com", "Hyderabad", "New Zealand", "Education", "high-school", 3, 58, "Not Eligible"],
+          ["Kabir Shah", "kabir.shah@example.com", "Surat", "Ireland", "Hospitality", "bachelors", 6, 77, "Eligible"],
+          ["Meera Iyer", "meera.iyer@example.com", "Chennai", "United Kingdom", "Healthcare", "doctorate", 12, 81, "Eligible"],
+          ["Dev Malhotra", "dev.malhotra@example.com", "Chandigarh", "Canada", "Logistics & Supply Chain", "diploma", 2, 44, "Not Eligible"],
+          ["Ananya Das", "ananya.das@example.com", "Kolkata", "Australia", "Finance & Accounting", "masters", 4, 69, "Pending"],
+          ["Karan Joshi", "karan.joshi@example.com", "Pune", "United Arab Emirates", "Engineering", "bachelors", 8, 88, "Eligible"],
+          ["Sana Khan", "sana.khan@example.com", "Lucknow", "Singapore", "IT & Software", "high-school", 1, 57, "Not Eligible"],
+          ["Rahul Verma", "rahul.verma@example.com", "Indore", "Germany", "Engineering", "masters", 7, 74, "Eligible"],
+          ["Tara Menon", "tara.menon@example.com", "Bengaluru", "Canada", "Healthcare", "bachelors", 5, 61, "Pending"]
+        ];
+        var documentOptions = [
+          ["passport", "Passport.pdf", "application/pdf"],
+          ["photo", "Candidate-photo.jpg", "image/jpeg"],
+          ["resume", "Resume.pdf", "application/pdf"],
+          ["educationCertificate", "Degree-certificate.pdf", "application/pdf"],
+          ["experienceLetter", "Experience-letter.pdf", "application/pdf"]
+        ];
+        var now = Date.now();
+        var added = 0;
+        candidates.forEach(function (candidate, index) {
+          var id = "GJP-DEMO-" + String(index + 1).padStart(3, "0");
+          if (existingIds.has(id)) return;
+          var submitted = new Date(now - (index % 14) * 86400000 - index * 480000).toISOString();
+          var docCount = index % 5 + 1;
+          var documents = documentOptions.slice(0, docCount).map(function (doc) {
+            return { type: doc[0], name: doc[1], size: 180000 + index * 777, mimeType: doc[2] };
+          });
+          applications.push({
+            id: id,
+            status: candidate[8],
+            eligibility: candidate[7],
+            submittedAt: submitted,
+            personalDetails: {
+              fullName: candidate[0],
+              phone: "+91 98765 " + String(10000 + index * 137).slice(-5),
+              email: candidate[1],
+              dateOfBirth: (1983 + index % 15) + "-" + String(index % 12 + 1).padStart(2, "0") + "-" + String(index % 26 + 1).padStart(2, "0"),
+              city: candidate[2],
+              education: candidate[5],
+              experience: candidate[6],
+              jobCategory: candidate[4],
+              country: candidate[3]
+            },
+            documents: documents
+          });
+          added += 1;
+        });
+        if (added === 0) {
+          showToast("Demo data is already loaded.");
+          return;
+        }
+        evaluatePolicy(now);
+        if (persistState()) {
+          renderDashboard();
+          showToast(added + " demo candidate" + (added === 1 ? "" : "s") + " added.");
+        }
+      }
+
+      function simulateThreeDays() {
+        if (!stateReady) return;
+        var now = Date.now();
+        var candidates = applications.filter(function (application) {
+          return getStatus(application) === "Not Eligible" && !application.autoDeleteCompletedAt;
+        });
+        if (!candidates.length) {
+          showToast("There are no Not Eligible applications awaiting document deletion.");
+          return;
+        }
+        candidates.forEach(function (application) {
+          if (!application.notEligibleSince) application.notEligibleSince = new Date(now - settings.autoDeleteDays * 86400000).toISOString();
+          application.autoDeleteAt = new Date(now - 1).toISOString();
+          application.autoDeleteDays = settings.autoDeleteDays;
+        });
+        evaluatePolicy(now);
+        renderDashboard();
+        showToast("Simulated 3 days later. " + candidates.length + " application" + (candidates.length === 1 ? "" : "s") + " processed.");
+      }
+
+      document.getElementById("logout").addEventListener("click", function () {
+        try {
+          window.sessionStorage.removeItem(SESSION_KEY);
+        } catch (error) {
+          console.error("Could not clear the demo admin session.", error);
+        }
+        window.location.href = "admin-login.html";
+      });
+      document.getElementById("load-demo").addEventListener("click", loadDemoData);
+      document.getElementById("simulate-days").addEventListener("click", simulateThreeDays);
+      ["search-applications", "filter-status", "filter-country", "sort-applications"].forEach(function (id) {
+        document.getElementById(id).addEventListener(id === "search-applications" ? "input" : "change", renderTable);
+      });
+
+      document.getElementById("rule-settings").addEventListener("submit", function (event) {
+        event.preventDefault();
+        var threshold = Number(document.getElementById("eligibility-threshold").value);
+        var days = Number(document.getElementById("auto-delete-days").value);
+        var feedback = document.getElementById("rule-feedback");
+        if (!Number.isInteger(threshold) || threshold < 0 || threshold > 100) {
+          feedback.textContent = "Threshold must be a whole number from 0 to 100.";
+          feedback.style.color = "#ff9ba7";
+          return;
+        }
+        if (!Number.isInteger(days) || days < 1 || days > 365) {
+          feedback.textContent = "Auto-delete days must be a whole number from 1 to 365.";
+          feedback.style.color = "#ff9ba7";
+          return;
+        }
+        settings.threshold = threshold;
+        settings.autoDeleteDays = days;
+        evaluatePolicy(Date.now());
+        if (!persistState()) return;
+        renderSettings();
+        renderDashboard();
+        feedback.textContent = "Settings saved.";
+        feedback.style.color = "#a8dacd";
+      });
+
+      document.getElementById("message-settings").addEventListener("submit", function (event) {
+        event.preventDefault();
+        settings.templates = {
+          eligible: document.getElementById("template-eligible").value.trim(),
+          notEligible: document.getElementById("template-not-eligible").value.trim(),
+          pending: document.getElementById("template-pending").value.trim(),
+          custom: document.getElementById("template-custom").value.trim()
+        };
+        if (Object.keys(settings.templates).some(function (key) { return !settings.templates[key]; })) {
+          var feedback = document.getElementById("message-feedback");
+          feedback.textContent = "Please provide text for every message template.";
+          feedback.style.color = "#ff9ba7";
+          return;
+        }
+        if (!persistState()) return;
+        document.getElementById("message-feedback").textContent = "Templates saved.";
+        document.getElementById("message-feedback").style.color = "#a8dacd";
+      });
+
+      window.addEventListener("storage", function (event) {
+        if ([APPLICATIONS_KEY, NOTIFICATIONS_KEY, SETTINGS_KEY].indexOf(event.key) !== -1 && loadState()) {
+          evaluatePolicy(Date.now());
+          renderSettings();
+          renderDashboard();
+        }
+      });
+
+      if (loadState()) {
+        evaluatePolicy(Date.now());
+        renderSettings();
+        renderDashboard();
+        window.setInterval(function () { evaluatePolicy(Date.now()); renderDashboard(); }, 60000);
+        window.setInterval(updateCountdownLabels, 1000);
+      }
+    }());
+  </script>
+</body>
+</html>

@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#080d20">
+  <meta name="description" content="Explore international job opportunities with GlobalJobs Portal. A simple guide for Indian candidates looking to work abroad.">
+  <title>GlobalJobs Portal — Your next chapter, worldwide</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #080d20;
+      --surface: rgba(18, 26, 54, .72);
+      --line: rgba(151, 169, 255, .13);
+      --muted: #9da9c5;
+      --text: #f5f7ff;
+      --blue: #5e8bff;
+      --purple: #a56dff;
+      --cyan: #62ddff;
+      --font: "DM Sans", sans-serif;
+      --display: "Poppins", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 90px; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font: 16px/1.65 var(--font);
+      overflow-x: hidden;
+    }
+    body::before {
+      position: fixed;
+      z-index: -1;
+      inset: 0;
+      content: "";
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse at 82% 18%, rgba(86, 67, 200, .15), transparent 34%),
+        radial-gradient(ellipse at 6% 46%, rgba(24, 110, 211, .09), transparent 30%),
+        linear-gradient(180deg, #080d20 0%, #0a1025 55%, #080d20 100%);
+    }
+    a { color: inherit; text-decoration: none; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    .container { width: min(1160px, calc(100% - 48px)); margin-inline: auto; }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      color: #aebeff;
+      font-size: .75rem;
+      font-weight: 700;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+    .eyebrow::before { width: 20px; height: 1px; background: var(--cyan); content: ""; }
+    .gradient-text {
+      color: #a9a8ff;
+      background: linear-gradient(100deg, #70baff 5%, #9d8aff 55%, #d89cff 100%);
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .section-heading { max-width: 650px; margin: 0 auto 54px; text-align: center; }
+    .section-heading h2 {
+      margin: 14px 0 12px;
+      font: 600 clamp(2rem, 4vw, 2.85rem)/1.2 var(--display);
+      letter-spacing: -.045em;
+    }
+    .section-heading p { max-width: 510px; margin: auto; color: var(--muted); }
+
+    .site-header {
+      position: sticky;
+      z-index: 20;
+      top: 0;
+      border-bottom: 1px solid rgba(151, 169, 255, .08);
+      background: rgba(8, 13, 32, .78);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+    .nav-wrap { display: flex; min-height: 76px; align-items: center; justify-content: space-between; gap: 24px; }
+    .brand { display: inline-flex; align-items: center; gap: 11px; font: 600 1rem var(--display); white-space: nowrap; }
+    .brand-mark {
+      display: grid;
+      width: 36px;
+      height: 36px;
+      place-items: center;
+      border: 1px solid rgba(130, 170, 255, .4);
+      border-radius: 12px;
+      background: linear-gradient(145deg, rgba(61, 143, 255, .3), rgba(151, 89, 255, .22));
+      box-shadow: 0 0 24px rgba(79, 126, 255, .2);
+      color: #b7d8ff;
+      font-size: 1.15rem;
+    }
+    .nav-links { display: flex; align-items: center; gap: clamp(18px, 3vw, 36px); }
+    .nav-links > a:not(.button) { color: #b8c0d5; font-size: .88rem; transition: color .2s ease; }
+    .nav-links > a:not(.button):hover { color: #fff; }
+    .button {
+      display: inline-flex;
+      min-height: 48px;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      padding: 0 22px;
+      border: 1px solid rgba(167, 174, 255, .36);
+      border-radius: 12px;
+      background: linear-gradient(110deg, #387bfa, #7956ed 75%, #9759e9);
+      box-shadow: 0 8px 26px rgba(78, 95, 231, .26), inset 0 1px rgba(255,255,255,.2);
+      color: #fff;
+      font: 600 .9rem var(--font);
+      transition: transform .2s ease, box-shadow .2s ease;
+    }
+    .button:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(78, 95, 231, .4); }
+    .button .arrow { font-size: 1.1rem; transition: transform .2s ease; }
+    .button:hover .arrow { transform: translateX(3px); }
+    .nav-cta { min-height: 42px; padding-inline: 17px; font-size: .84rem; }
+    .menu-toggle {
+      display: none;
+      width: 42px;
+      height: 42px;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      background: var(--surface);
+      color: #fff;
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+
+    .hero { position: relative; min-height: 650px; padding: 82px 0 64px; }
+    .hero::after {
+      position: absolute;
+      z-index: -1;
+      top: 3%;
+      right: 0;
+      width: 63vw;
+      height: 550px;
+      border-radius: 50%;
+      background: radial-gradient(ellipse, rgba(80, 68, 210, .16), transparent 68%);
+      content: "";
+      pointer-events: none;
+    }
+    .hero-grid { display: grid; min-height: 490px; grid-template-columns: 1.03fr .97fr; align-items: center; gap: 30px; }
+    .hero-copy { position: relative; z-index: 2; padding-bottom: 24px; }
+    .availability {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      margin-bottom: 23px;
+      padding: 7px 12px;
+      border: 1px solid rgba(107, 228, 184, .19);
+      border-radius: 999px;
+      background: rgba(33, 158, 116, .08);
+      color: #a5e8cd;
+      font-size: .76rem;
+    }
+    .availability span { width: 7px; height: 7px; border-radius: 50%; background: #64e0a9; box-shadow: 0 0 10px #64e0a9; }
+    h1 { max-width: 620px; margin: 0; font: 600 clamp(2.8rem, 5.2vw, 4.65rem)/1.12 var(--display); letter-spacing: -.06em; }
+    .hero-copy > p { max-width: 520px; margin: 23px 0 30px; color: #aab4ce; font-size: 1.06rem; }
+    .hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
+    .hero-note { display: inline-flex; align-items: center; gap: 8px; color: #aab4ce; font-size: .81rem; }
+    .hero-note b { color: #72dfbd; font-size: 1rem; }
+    .hero-visual { position: relative; display: grid; min-height: 440px; place-items: center; isolation: isolate; }
+    .globe-halo {
+      position: absolute;
+      width: min(470px, 100%);
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(48, 113, 226, .18), rgba(77, 65, 186, .08) 49%, transparent 70%);
+      filter: blur(4px);
+    }
+    #globe-canvas { position: relative; z-index: 1; width: min(500px, 100%); height: 440px; touch-action: none; cursor: grab; }
+    #globe-canvas:active { cursor: grabbing; }
+    .globe-fallback {
+      position: absolute;
+      z-index: 0;
+      width: 274px;
+      aspect-ratio: 1;
+      border: 1px solid rgba(105, 179, 255, .38);
+      border-radius: 50%;
+      background:
+        radial-gradient(ellipse at 36% 34%, rgba(70, 177, 255, .24), transparent 32%),
+        repeating-linear-gradient(0deg, transparent 0 37px, rgba(105, 179, 255, .1) 38px 39px, transparent 40px 58px),
+        repeating-linear-gradient(90deg, transparent 0 39px, rgba(105, 179, 255, .1) 40px 41px, transparent 42px 61px),
+        radial-gradient(circle at 38% 30%, #1a4779, #0d1b3c 64%, #091027);
+      box-shadow: 0 0 65px rgba(42, 127, 255, .21), inset -16px -10px 35px rgba(2, 5, 20, .8);
+      animation: float 6s ease-in-out infinite;
+    }
+    .globe-fallback::after {
+      position: absolute;
+      inset: 9% -8%;
+      border: 1px solid rgba(112, 145, 255, .23);
+      border-radius: 50%;
+      content: "";
+      transform: rotate(-24deg);
+    }
+    .globe-tag {
+      position: absolute;
+      z-index: 3;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 10px 14px;
+      border: 1px solid rgba(154, 174, 255, .18);
+      border-radius: 12px;
+      background: rgba(17, 26, 54, .78);
+      box-shadow: 0 12px 34px rgba(0,0,0,.2);
+      backdrop-filter: blur(12px);
+      color: #dce5ff;
+      font-size: .76rem;
+      animation: float 5s ease-in-out infinite;
+    }
+    .globe-tag span { font-size: 1.1rem; }
+    .tag-one { top: 16%; right: 3%; }
+    .tag-two { bottom: 17%; left: 3%; animation-delay: -2.5s; }
+    .hero-proof {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      margin-top: 52px;
+      color: var(--muted);
+      font-size: .78rem;
+    }
+    .avatar-stack { display: flex; padding-left: 4px; }
+    .avatar-stack span {
+      display: grid;
+      width: 29px;
+      height: 29px;
+      margin-left: -5px;
+      place-items: center;
+      border: 2px solid #0b1128;
+      border-radius: 50%;
+      background: linear-gradient(145deg, #668aff, #a870dd);
+      color: white;
+      font-size: .63rem;
+      font-weight: 700;
+    }
+    .avatar-stack span:nth-child(2) { background: linear-gradient(145deg, #e99e80, #b95d84); }
+    .avatar-stack span:nth-child(3) { background: linear-gradient(145deg, #62c6bd, #4b83ce); }
+    .avatar-stack span:nth-child(4) { background: linear-gradient(145deg, #edc36a, #cd7590); }
+
+    .steps-section, .testimonials-section { padding: 96px 0; }
+    .steps-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+    .step-card, .quote-card, .stat-card {
+      border: 1px solid var(--line);
+      background: linear-gradient(145deg, rgba(23, 33, 68, .68), rgba(13, 19, 42, .62));
+      box-shadow: 0 18px 45px rgba(0,0,0,.12), inset 0 1px rgba(255,255,255,.025);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+    .step-card {
+      position: relative;
+      min-height: 242px;
+      padding: 25px 22px 22px;
+      border-radius: 17px;
+      transition: border-color .25s ease, transform .25s ease, background .25s ease;
+    }
+    .step-card:hover { transform: translateY(-7px); border-color: rgba(111, 153, 255, .38); background: linear-gradient(145deg, rgba(29, 43, 87, .8), rgba(16, 23, 50, .72)); }
+    .step-index { position: absolute; top: 24px; right: 22px; color: #7683a5; font-size: .74rem; font-weight: 700; }
+    .step-icon {
+      display: grid;
+      width: 49px;
+      height: 49px;
+      margin-bottom: 23px;
+      place-items: center;
+      border: 1px solid rgba(126, 155, 255, .2);
+      border-radius: 14px;
+      background: linear-gradient(145deg, rgba(69, 122, 245, .2), rgba(159, 83, 237, .14));
+      color: #a9c5ff;
+      font-size: 1.35rem;
+    }
+    .step-card h3 { margin: 0 0 8px; font: 500 1.04rem var(--display); }
+    .step-card p { margin: 0; color: var(--muted); font-size: .85rem; line-height: 1.65; }
+
+    .stats-section { padding: 30px 0 96px; }
+    .stats-panel {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      overflow: hidden;
+      border: 1px solid rgba(128, 147, 255, .2);
+      border-radius: 21px;
+      background: linear-gradient(105deg, rgba(23, 71, 135, .23), rgba(84, 55, 150, .2));
+      box-shadow: inset 0 1px rgba(255,255,255,.04);
+    }
+    .stats-panel::before {
+      position: absolute;
+      top: -125px;
+      left: 50%;
+      width: 400px;
+      height: 240px;
+      border-radius: 50%;
+      background: rgba(94, 122, 255, .1);
+      content: "";
+      filter: blur(55px);
+      transform: translateX(-50%);
+    }
+    .stat-card { position: relative; padding: 34px 20px; border: 0; background: transparent; text-align: center; }
+    .stat-card + .stat-card { border-left: 1px solid rgba(160, 174, 255, .13); }
+    .stat-value { display: block; color: #e4e6ff; font: 600 clamp(2rem, 4vw, 2.75rem)/1.2 var(--display); letter-spacing: -.05em; }
+    .stat-value em { color: #a89cff; font-style: normal; }
+    .stat-label { display: block; margin-top: 7px; color: var(--muted); font-size: .87rem; }
+
+    .testimonials-section { padding-top: 30px; }
+    .quotes-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    .quote-card { min-height: 247px; padding: 25px; border-radius: 17px; }
+    .quote-top { display: flex; align-items: center; justify-content: space-between; }
+    .quote-stars { color: #ffc96a; font-size: .87rem; letter-spacing: .12em; }
+    .quote-mark { color: rgba(147, 137, 255, .5); font: 3rem/.8 Georgia, serif; }
+    .quote-card blockquote { margin: 18px 0 24px; color: #c4cce0; font-size: .91rem; line-height: 1.75; }
+    .quote-person { display: flex; align-items: center; gap: 11px; }
+    .person-avatar {
+      display: grid;
+      width: 39px;
+      height: 39px;
+      place-items: center;
+      border-radius: 50%;
+      background: linear-gradient(145deg, #357cc9, #715bd4);
+      font-size: .76rem;
+      font-weight: 700;
+    }
+    .quote-card:nth-child(2) .person-avatar { background: linear-gradient(145deg, #c87970, #8454b9); }
+    .quote-card:nth-child(3) .person-avatar { background: linear-gradient(145deg, #359a9c, #536dc9); }
+    .person-name { display: block; color: #f2f4ff; font-size: .83rem; font-weight: 600; }
+    .person-detail { display: block; color: #8f9ab6; font-size: .74rem; }
+    .illustrative-note { margin: 19px 0 0; color: #77829f; font-size: .74rem; text-align: center; }
+
+    .closing-cta { padding: 8px 0 94px; }
+    .closing-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      padding: 34px 40px;
+      border: 1px solid rgba(127, 148, 255, .18);
+      border-radius: 19px;
+      background: radial-gradient(ellipse at 80% 0%, rgba(122, 83, 230, .17), transparent 45%), rgba(18, 28, 57, .62);
+    }
+    .closing-card h2 { margin: 0 0 5px; font: 500 clamp(1.3rem, 3vw, 1.8rem) var(--display); letter-spacing: -.035em; }
+    .closing-card p { margin: 0; color: var(--muted); font-size: .9rem; }
+    .footer { padding: 40px 0 24px; border-top: 1px solid rgba(151, 169, 255, .1); background: rgba(5, 9, 23, .42); }
+    .footer-main { display: flex; align-items: flex-start; justify-content: space-between; gap: 36px; padding-bottom: 34px; }
+    .footer-brand { max-width: 310px; }
+    .footer-brand p { margin: 14px 0 0; color: #929db8; font-size: .84rem; }
+    .footer-contact h3 { margin: 0 0 12px; font: 500 .9rem var(--display); }
+    .footer-contact a, .footer-contact p { display: block; margin: 5px 0; color: #a6b0c9; font-size: .84rem; }
+    .trust-badges { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 17px; }
+    .trust-badge { display: inline-flex; align-items: center; gap: 7px; padding: 7px 10px; border: 1px solid rgba(111, 215, 187, .17); border-radius: 8px; background: rgba(28, 124, 101, .08); color: #a8dacd; font-size: .72rem; }
+    .trust-badge span { color: #77dfb5; }
+    .footer-bottom { display: flex; justify-content: space-between; gap: 18px; padding-top: 19px; border-top: 1px solid rgba(151, 169, 255, .08); color: #77829e; font-size: .75rem; }
+    .footer-bottom p { margin: 0; }
+    .footer-bottom a:hover { color: #b7caff; }
+
+    .reveal { opacity: 0; transform: translateY(22px); transition: opacity .65s ease, transform .65s cubic-bezier(.2,.7,.2,1); }
+    .reveal.is-visible { opacity: 1; transform: translateY(0); }
+    .step-card:nth-child(2), .quote-card:nth-child(2) { transition-delay: .08s; }
+    .step-card:nth-child(3), .quote-card:nth-child(3) { transition-delay: .16s; }
+    .step-card:nth-child(4) { transition-delay: .24s; }
+    @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+      .reveal { opacity: 1; transform: none; }
+    }
+    @media (max-width: 900px) {
+      .hero { padding-top: 58px; }
+      .hero-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+      .hero-visual { min-height: 380px; }
+      #globe-canvas { height: 380px; }
+      .steps-grid { grid-template-columns: repeat(2, 1fr); }
+      .step-card { min-height: 218px; }
+    }
+    @media (max-width: 680px) {
+      .container { width: min(100% - 36px, 520px); }
+      .nav-wrap { min-height: 68px; }
+      .menu-toggle { display: grid; }
+      .nav-links {
+        position: absolute;
+        top: calc(100% + 1px);
+        right: 0;
+        left: 0;
+        display: none;
+        align-items: stretch;
+        gap: 0;
+        padding: 10px 18px 17px;
+        border-bottom: 1px solid var(--line);
+        background: rgba(8, 13, 32, .97);
+      }
+      .nav-links.open { display: flex; flex-direction: column; }
+      .nav-links > a:not(.button) { padding: 11px 3px; }
+      .nav-links .nav-cta { margin-top: 8px; }
+      .hero { min-height: auto; padding: 62px 0 42px; }
+      .hero-grid { grid-template-columns: 1fr; }
+      .hero-copy { padding-bottom: 0; }
+      h1 { font-size: clamp(2.75rem, 12vw, 4rem); }
+      .hero-copy > p { margin: 18px 0 24px; font-size: .98rem; }
+      .hero-visual { min-height: 330px; margin-top: 8px; }
+      #globe-canvas { height: 330px; }
+      .globe-fallback { width: 226px; }
+      .tag-one { top: 13%; right: 0; }
+      .tag-two { bottom: 10%; left: 0; }
+      .hero-proof { margin-top: 31px; }
+      .steps-section, .testimonials-section { padding: 67px 0; }
+      .section-heading { margin-bottom: 34px; }
+      .steps-grid, .quotes-grid { grid-template-columns: 1fr; gap: 13px; }
+      .step-card { min-height: 0; padding: 20px; }
+      .step-icon { margin-bottom: 17px; }
+      .stats-section { padding: 0 0 72px; }
+      .stats-panel { grid-template-columns: 1fr; }
+      .stat-card { padding: 22px 15px; }
+      .stat-card + .stat-card { border-top: 1px solid rgba(160, 174, 255, .13); border-left: 0; }
+      .testimonials-section { padding-top: 4px; }
+      .quote-card { min-height: auto; }
+      .closing-cta { padding-bottom: 66px; }
+      .closing-card { align-items: flex-start; flex-direction: column; padding: 26px 23px; }
+      .footer-main { flex-direction: column; gap: 27px; }
+      .footer-bottom { flex-direction: column; gap: 6px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container nav-wrap">
+      <a class="brand" href="#home" aria-label="GlobalJobs Portal home">
+        <span class="brand-mark" aria-hidden="true">✦</span>
+        <span>GlobalJobs <span class="gradient-text">Portal</span></span>
+      </a>
+      <button class="menu-toggle" type="button" aria-label="Open navigation menu" aria-expanded="false" aria-controls="primary-navigation">☰</button>
+      <nav class="nav-links" id="primary-navigation" aria-label="Main navigation">
+        <a href="#home">Home</a>
+        <a href="#how-it-works">How It Works</a>
+        <a href="#about">About</a>
+        <a href="#contact">Contact</a>
+        <a class="button nav-cta" href="apply.html">Apply Now <span class="arrow" aria-hidden="true">→</span></a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" id="home">
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <div class="availability"><span></span> Your global career starts here</div>
+          <h1>Your Dream Job <span class="gradient-text">Abroad</span> Starts Here</h1>
+          <p>Big opportunities are closer than you think. Explore international roles, understand your eligibility, and take your next career step with confidence.</p>
+          <div class="hero-actions">
+            <a class="button" href="apply.html">Start your application <span class="arrow" aria-hidden="true">→</span></a>
+            <span class="hero-note"><b aria-hidden="true">✓</b> Free to get started</span>
+          </div>
+          <div class="hero-proof">
+            <div class="avatar-stack" aria-hidden="true"><span>AK</span><span>PM</span><span>SR</span><span>+2k</span></div>
+            <span>Helping Indian talent explore new horizons</span>
+          </div>
+        </div>
+        <div class="hero-visual" aria-label="Animated globe showing India connected to international destinations">
+          <div class="globe-halo"></div>
+          <div class="globe-fallback" aria-hidden="true"></div>
+          <canvas id="globe-canvas" aria-hidden="true"></canvas>
+          <div class="globe-tag tag-one"><span aria-hidden="true">🇬🇧</span> United Kingdom</div>
+          <div class="globe-tag tag-two"><span aria-hidden="true">🇸🇬</span> Singapore</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="steps-section" id="how-it-works">
+      <div class="container">
+        <div class="section-heading reveal">
+          <span class="eyebrow">A clear path forward</span>
+          <h2>How it <span class="gradient-text">works</span></h2>
+          <p>Four simple steps bring your international career plans into focus.</p>
+        </div>
+        <div class="steps-grid">
+          <article class="step-card reveal">
+            <span class="step-index">01 / 04</span>
+            <div class="step-icon" aria-hidden="true">♙</div>
+            <h3>Register</h3>
+            <p>Create your profile and tell us about your experience, skills, and career goals.</p>
+          </article>
+          <article class="step-card reveal">
+            <span class="step-index">02 / 04</span>
+            <div class="step-icon" aria-hidden="true">↥</div>
+            <h3>Upload Documents</h3>
+            <p>Share your resume and the documents needed to get your application started.</p>
+          </article>
+          <article class="step-card reveal">
+            <span class="step-index">03 / 04</span>
+            <div class="step-icon" aria-hidden="true">⌕</div>
+            <h3>Eligibility Check</h3>
+            <p>Review how your profile aligns with the requirements for overseas opportunities.</p>
+          </article>
+          <article class="step-card reveal">
+            <span class="step-index">04 / 04</span>
+            <div class="step-icon" aria-hidden="true">✧</div>
+            <h3>Get Result</h3>
+            <p>See your next steps and explore possibilities that fit your ambitions.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="stats-section" id="about" aria-label="Portal highlights">
+      <div class="container">
+        <div class="stats-panel reveal">
+          <div class="stat-card">
+            <span class="stat-value"><span data-count="2500">0</span><em>+</em></span>
+            <span class="stat-label">Candidates applied</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-value"><span data-count="30">0</span><em>+</em></span>
+            <span class="stat-label">Countries to explore</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-value"><span data-count="92">0</span><em>%</em></span>
+            <span class="stat-label">Candidate satisfaction</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="testimonials-section" aria-labelledby="stories-heading">
+      <div class="container">
+        <div class="section-heading reveal">
+          <span class="eyebrow">Stories from the journey</span>
+          <h2 id="stories-heading">A world of <span class="gradient-text">possibility</span></h2>
+          <p>Every career journey is different. Here are a few examples of the experiences candidates value.</p>
+        </div>
+        <div class="quotes-grid">
+          <article class="quote-card reveal">
+            <div class="quote-top"><span class="quote-stars" aria-label="5 out of 5 stars">★★★★★</span><span class="quote-mark" aria-hidden="true">“</span></div>
+            <blockquote>The step-by-step process made a big move feel much more manageable. I knew what to prepare at every stage.</blockquote>
+            <div class="quote-person"><span class="person-avatar" aria-hidden="true">RP</span><span><span class="person-name">Riya Patel</span><span class="person-detail">Software Engineer · London</span></span></div>
+          </article>
+          <article class="quote-card reveal">
+            <div class="quote-top"><span class="quote-stars" aria-label="5 out of 5 stars">★★★★★</span><span class="quote-mark" aria-hidden="true">“</span></div>
+            <blockquote>I appreciated having a clear place to understand the process and organise the details of my application.</blockquote>
+            <div class="quote-person"><span class="person-avatar" aria-hidden="true">AM</span><span><span class="person-name">Arjun Mehta</span><span class="person-detail">Product Designer · Singapore</span></span></div>
+          </article>
+          <article class="quote-card reveal">
+            <div class="quote-top"><span class="quote-stars" aria-label="5 out of 5 stars">★★★★★</span><span class="quote-mark" aria-hidden="true">“</span></div>
+            <blockquote>A helpful starting point for exploring international roles and figuring out which opportunities could fit.</blockquote>
+            <div class="quote-person"><span class="person-avatar" aria-hidden="true">SK</span><span><span class="person-name">Sneha Kumar</span><span class="person-detail">Healthcare Professional · Dubai</span></span></div>
+          </article>
+        </div>
+        <p class="illustrative-note">Illustrative sample testimonials for this demo website.</p>
+      </div>
+    </section>
+
+    <section class="closing-cta" id="apply">
+      <div class="container">
+        <div class="closing-card reveal">
+          <div>
+            <h2>Ready to take your career further?</h2>
+            <p>Start exploring your next opportunity beyond borders.</p>
+          </div>
+          <a class="button" href="apply.html">Apply Now <span class="arrow" aria-hidden="true">→</span></a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer" id="contact">
+    <div class="container">
+      <div class="footer-main">
+        <div class="footer-brand">
+          <a class="brand" href="#home"><span class="brand-mark" aria-hidden="true">✦</span><span>GlobalJobs <span class="gradient-text">Portal</span></span></a>
+          <p>Connecting ambitious Indian professionals with career possibilities around the world.</p>
+          <div class="trust-badges">
+            <span class="trust-badge"><span aria-hidden="true">◈</span> Secure Document Storage</span>
+            <span class="trust-badge"><span aria-hidden="true">⌑</span> Encrypted Uploads</span>
+          </div>
+        </div>
+        <div class="footer-contact">
+          <h3>Get in touch</h3>
+          <a href="mailto:hello@globaljobs.example">hello@globaljobs.example</a>
+          <p>Mon – Fri, 9:00 AM – 6:00 PM IST</p>
+          <p>New Delhi, India</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© <span id="current-year"></span> GlobalJobs Portal. Demo website.</p>
+        <p>Opportunities without borders.</p>
+        <a href="admin-login.html">Admin demo</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      "use strict";
+
+      var menuButton = document.querySelector(".menu-toggle");
+      var navigation = document.querySelector(".nav-links");
+      menuButton.addEventListener("click", function () {
+        var isOpen = navigation.classList.toggle("open");
+        menuButton.setAttribute("aria-expanded", String(isOpen));
+        menuButton.setAttribute("aria-label", isOpen ? "Close navigation menu" : "Open navigation menu");
+        menuButton.textContent = isOpen ? "×" : "☰";
+      });
+      navigation.querySelectorAll("a").forEach(function (link) {
+        link.addEventListener("click", function () {
+          navigation.classList.remove("open");
+          menuButton.setAttribute("aria-expanded", "false");
+          menuButton.setAttribute("aria-label", "Open navigation menu");
+          menuButton.textContent = "☰";
+        });
+      });
+      document.getElementById("current-year").textContent = new Date().getFullYear();
+
+      var revealItems = document.querySelectorAll(".reveal");
+      if ("IntersectionObserver" in window) {
+        var revealObserver = new IntersectionObserver(function (entries, observer) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("is-visible");
+              observer.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.13 });
+        revealItems.forEach(function (item) { revealObserver.observe(item); });
+      } else {
+        revealItems.forEach(function (item) { item.classList.add("is-visible"); });
+      }
+
+      var countersStarted = false;
+      function startCounters() {
+        if (countersStarted) return;
+        countersStarted = true;
+        document.querySelectorAll("[data-count]").forEach(function (counter) {
+          var target = Number(counter.getAttribute("data-count"));
+          var duration = 1500;
+          var start = performance.now();
+          function update(now) {
+            var progress = Math.min((now - start) / duration, 1);
+            var eased = 1 - Math.pow(1 - progress, 3);
+            counter.textContent = Math.round(target * eased).toLocaleString("en-IN");
+            if (progress < 1) window.requestAnimationFrame(update);
+          }
+          window.requestAnimationFrame(update);
+        });
+      }
+      var stats = document.querySelector(".stats-panel");
+      if ("IntersectionObserver" in window) {
+        var statsObserver = new IntersectionObserver(function (entries, observer) {
+          if (entries[0].isIntersecting) {
+            startCounters();
+            observer.disconnect();
+          }
+        }, { threshold: 0.25 });
+        statsObserver.observe(stats);
+      } else {
+        startCounters();
+      }
+
+      function initGlobe() {
+        var canvas = document.getElementById("globe-canvas");
+        var fallback = document.querySelector(".globe-fallback");
+        if (!window.THREE || !canvas) return;
+
+        try {
+          var THREE = window.THREE;
+          var scene = new THREE.Scene();
+          var camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
+          camera.position.z = 5.25;
+          var renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+          renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+          renderer.setClearColor(0x000000, 0);
+
+          var globe = new THREE.Group();
+          scene.add(globe);
+          var earthMaterial = new THREE.MeshPhongMaterial({
+            color: 0x346ab0,
+            emissive: 0x09204a,
+            emissiveIntensity: 0.45,
+            shininess: 35
+          });
+          var sphere = new THREE.Mesh(
+            new THREE.SphereGeometry(1.55, 56, 56),
+            earthMaterial
+          );
+          globe.add(sphere);
+
+          var textureLoader = new THREE.TextureLoader();
+          textureLoader.load(
+            "https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg",
+            function (texture) {
+              texture.encoding = THREE.sRGBEncoding;
+              earthMaterial.map = texture;
+              earthMaterial.color.set(0xffffff);
+              earthMaterial.needsUpdate = true;
+            },
+            undefined,
+            function () {
+              console.warn("The Earth texture could not be loaded; showing a plain blue globe.");
+            }
+          );
+
+          var gridMaterial = new THREE.LineBasicMaterial({ color: 0x62aaff, transparent: true, opacity: 0.2 });
+          function addCurve(points, material, parent) {
+            var geometry = new THREE.BufferGeometry().setFromPoints(points);
+            var line = new THREE.Line(geometry, material);
+            parent.add(line);
+            return line;
+          }
+          for (var lat = -60; lat <= 60; lat += 30) {
+            var latPoints = [];
+            for (var lon = 0; lon <= 360; lon += 4) {
+              var phi = (90 - lat) * Math.PI / 180;
+              var theta = lon * Math.PI / 180;
+              latPoints.push(new THREE.Vector3(
+                -1.565 * Math.sin(phi) * Math.cos(theta),
+                1.565 * Math.cos(phi),
+                1.565 * Math.sin(phi) * Math.sin(theta)
+              ));
+            }
+            addCurve(latPoints, gridMaterial, globe);
+          }
+          for (var meridian = 0; meridian < 180; meridian += 30) {
+            var meridianPoints = [];
+            for (var latitude = -90; latitude <= 90; latitude += 4) {
+              var mPhi = (90 - latitude) * Math.PI / 180;
+              var mTheta = meridian * Math.PI / 180;
+              meridianPoints.push(new THREE.Vector3(
+                -1.566 * Math.sin(mPhi) * Math.cos(mTheta),
+                1.566 * Math.cos(mPhi),
+                1.566 * Math.sin(mPhi) * Math.sin(mTheta)
+              ));
+            }
+            addCurve(meridianPoints, gridMaterial, globe);
+          }
+
+          function positionFor(lat, lon, radius) {
+            var phi = (90 - lat) * Math.PI / 180;
+            var theta = (lon + 90) * Math.PI / 180;
+            return new THREE.Vector3(
+              -radius * Math.sin(phi) * Math.cos(theta),
+              radius * Math.cos(phi),
+              radius * Math.sin(phi) * Math.sin(theta)
+            );
+          }
+          var destinations = [
+            { name: "United Kingdom", lat: 51.5, lon: -0.1 },
+            { name: "Singapore", lat: 1.35, lon: 103.8 },
+            { name: "Germany", lat: 52.5, lon: 13.4 },
+            { name: "Canada", lat: 43.7, lon: -79.4 },
+            { name: "Australia", lat: -33.9, lon: 151.2 },
+            { name: "UAE", lat: 25.2, lon: 55.3 }
+          ];
+          var india = positionFor(20.6, 78.9, 1.58);
+          var indiaGlow = new THREE.Mesh(
+            new THREE.SphereGeometry(0.13, 16, 16),
+            new THREE.MeshBasicMaterial({ color: 0xffb95e, transparent: true, opacity: 0.32 })
+          );
+          indiaGlow.position.copy(india);
+          globe.add(indiaGlow);
+          var indiaDot = new THREE.Mesh(
+            new THREE.SphereGeometry(0.055, 12, 12),
+            new THREE.MeshBasicMaterial({ color: 0xffd68b })
+          );
+          indiaDot.position.copy(india);
+          globe.add(indiaDot);
+          var travellingDots = [];
+          destinations.forEach(function (destination, index) {
+            var end = positionFor(destination.lat, destination.lon, 1.58);
+            var midpoint = india.clone().add(end).normalize().multiplyScalar(2.05 + (index % 2) * 0.12);
+            var curve = new THREE.QuadraticBezierCurve3(india, midpoint, end);
+            var points = curve.getPoints(48);
+            var arcMaterial = new THREE.LineBasicMaterial({
+              color: index % 2 ? 0xb28aff : 0x5de0ff,
+              transparent: true,
+              opacity: 0.8
+            });
+            addCurve(points, arcMaterial, globe);
+            var destinationDot = new THREE.Mesh(
+              new THREE.SphereGeometry(0.04, 10, 10),
+              new THREE.MeshBasicMaterial({ color: index % 2 ? 0xb28aff : 0x76eaff })
+            );
+            destinationDot.position.copy(end);
+            globe.add(destinationDot);
+
+            var traveller = new THREE.Mesh(
+              new THREE.SphereGeometry(0.035, 10, 10),
+              new THREE.MeshBasicMaterial({ color: 0xffffff })
+            );
+            globe.add(traveller);
+            travellingDots.push({ mesh: traveller, curve: curve, offset: index / destinations.length });
+
+            var labelCanvas = document.createElement("canvas");
+            labelCanvas.width = 512;
+            labelCanvas.height = 96;
+            var labelContext = labelCanvas.getContext("2d");
+            labelContext.font = "600 38px Arial";
+            labelContext.textAlign = "center";
+            labelContext.textBaseline = "middle";
+            labelContext.fillStyle = "rgba(9, 17, 40, 0.76)";
+            labelContext.strokeStyle = "rgba(133, 176, 255, 0.62)";
+            labelContext.lineWidth = 3;
+            labelContext.fillRect(5, 5, 502, 86);
+            labelContext.strokeRect(5, 5, 502, 86);
+            labelContext.fillStyle = "#e7f2ff";
+            labelContext.fillText(destination.name, 256, 49);
+            var labelTexture = new THREE.CanvasTexture(labelCanvas);
+            labelTexture.encoding = THREE.sRGBEncoding;
+            var label = new THREE.Sprite(new THREE.SpriteMaterial({
+              map: labelTexture,
+              transparent: true,
+              depthTest: true
+            }));
+            label.position.copy(end.clone().normalize().multiplyScalar(1.88));
+            label.scale.set(destination.name.length > 10 ? 0.95 : 0.72, 0.18, 1);
+            globe.add(label);
+          });
+
+          scene.add(new THREE.AmbientLight(0x7699ff, 0.8));
+          var keyLight = new THREE.PointLight(0x70bdff, 1.9, 12);
+          keyLight.position.set(-3, 2.4, 4);
+          scene.add(keyLight);
+          var rimLight = new THREE.PointLight(0x925dff, 1.2, 10);
+          rimLight.position.set(3, -1, -3);
+          scene.add(rimLight);
+          var atmosphere = new THREE.Mesh(
+            new THREE.SphereGeometry(1.61, 48, 48),
+            new THREE.MeshBasicMaterial({ color: 0x569bff, transparent: true, opacity: 0.08, side: THREE.BackSide })
+          );
+          globe.add(atmosphere);
+          fallback.style.display = "none";
+
+          var dragging = false;
+          var lastPointerX = 0;
+          var lastPointerY = 0;
+          canvas.addEventListener("pointerdown", function (event) {
+            dragging = true;
+            lastPointerX = event.clientX;
+            lastPointerY = event.clientY;
+            canvas.setPointerCapture(event.pointerId);
+          });
+          canvas.addEventListener("pointermove", function (event) {
+            if (!dragging) return;
+            globe.rotation.y += (event.clientX - lastPointerX) * 0.008;
+            globe.rotation.x = Math.max(-0.75, Math.min(0.75,
+              globe.rotation.x + (event.clientY - lastPointerY) * 0.008
+            ));
+            lastPointerX = event.clientX;
+            lastPointerY = event.clientY;
+          });
+          function stopDragging() { dragging = false; }
+          canvas.addEventListener("pointerup", stopDragging);
+          canvas.addEventListener("pointercancel", stopDragging);
+
+          function resize() {
+            var rect = canvas.getBoundingClientRect();
+            var width = Math.max(1, rect.width);
+            var height = Math.max(1, rect.height);
+            renderer.setSize(width, height, false);
+            camera.aspect = width / height;
+            camera.updateProjectionMatrix();
+          }
+          resize();
+          if ("ResizeObserver" in window) {
+            new ResizeObserver(resize).observe(canvas);
+          } else {
+            window.addEventListener("resize", resize);
+          }
+          var reducedMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+          function animate() {
+            if (!document.hidden) {
+              var time = performance.now() * 0.00015;
+              if (!reducedMotion) {
+                if (!dragging) globe.rotation.y += 0.0018;
+                indiaGlow.scale.setScalar(1 + (Math.sin(time * 4) + 1) * 0.45);
+                indiaGlow.material.opacity = 0.2 + (Math.sin(time * 4) + 1) * 0.1;
+                travellingDots.forEach(function (dot) {
+                  dot.mesh.position.copy(dot.curve.getPointAt((time + dot.offset) % 1));
+                });
+              }
+              renderer.render(scene, camera);
+            }
+            window.requestAnimationFrame(animate);
+          }
+          animate();
+        } catch (error) {
+          canvas.style.display = "none";
+          fallback.style.display = "block";
+          console.warn("The animated globe is unavailable; showing the static globe instead.", error);
+        }
+      }
+      initGlobe();
+    }());
+  </script>
+</body>
+</html>
